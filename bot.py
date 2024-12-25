@@ -2,9 +2,13 @@ import asyncio
 import os
 import sys
 import subprocess
-from config import SESSION, API_HASH, API_ID, BOT_TOKEN
+from config import SESSION, API_HASH, API_ID, BOT_TOKEN, USERBOT_SESSION
 from pyrogram import Client, idle  # type: ignore
 from functions import temp
+from pathlib import Path
+
+Path(SESSION).mkdir(exist_ok=True,parents=True)
+Path(USERBOT_SESSION).mkdir(exist_ok=True,parents=True)
 
 
 class Bot(Client):
