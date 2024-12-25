@@ -3,7 +3,7 @@ import asyncio
 import pytz
 from pyrogram import Client,filters #type: ignore
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton #type: ignore
-from database import Users , Accounts
+from database import Users , Accounts, Admin
 import asyncio
 from datetime import datetime
 
@@ -18,16 +18,27 @@ class temp(object):
     
     
 def mainMenu(fromUser):
-    userData = Users.find_one({"userID":fromUser.id})
     text =  (f"<b>👋 Hello, {fromUser.first_name}!</b>\n\n")
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("📩 Send Message","/sendMessage")],
-        [InlineKeyboardButton("🔔 Join Chat","/joinChat"),InlineKeyboardButton("🔕 Leave Chats","/leaveChats")],
+        [InlineKeyboardButton("🔔 Join Chat","/joinChats"),InlineKeyboardButton("🔕 Leave Chats","/leaveChats")],
         [InlineKeyboardButton("👀 Views","/sendViews"),InlineKeyboardButton("❤️ Reaction","/sendReactions")],
-        [InlineKeyboardButton("🗳 Votes","/sendVotes")]
+        # [InlineKeyboardButton("🗳 Votes","/sendVotes")]
         ])
     return text,keyboard
 
+
+#For admin
+async def grantAccessMarkup(userID):
+    accessUsers = Admin.find_one({"accessUser":True}) or {}
+    usersList = accessUsers.get("list",[])
+    text = f"<b>UserID: </b><code>{userID}</code>"
+    keyboard = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("✅ Grant Access" if (not int(userID) in usersList) else "❎ Remove Access",f"/changeAccess {userID}")]
+        ]
+    )
+    return text, keyboard
 
 # For Admin
 def adminPanel(fromUser):
@@ -119,19 +130,6 @@ async def account_details_view(account_info,backCommand="/manageAccountListAdmin
     ])
     
     return text, keyboard
-
-
-
-def generate_random_string(length=8, include_digits=True, include_special_chars=False):
-    characters = string.ascii_letters  # Uppercase and lowercase letters
-
-    if include_digits:
-        characters += string.digits  # Add digits
-
-    if include_special_chars:
-        characters += string.punctuation  # Add special characters
-
-    return ''.join(random.choice(characters) for _ in range(length))
 
 
 def is_number(value):
