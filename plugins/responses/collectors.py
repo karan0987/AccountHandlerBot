@@ -374,8 +374,9 @@ async def userbot_otp(client, message):
     except SessionPasswordNeeded:
         await message.reply("<b>Two-step verification is enabled. Please enter your password:</b>")
         createResponse(message.from_user.id, "createUserbotPassword", {
-            "userbot_client": userbot_client, "app_id": getResponse(message.from_user.id)["payload"]["app_id"]
+            "userbot_client": userbot_client, "app_id": app_id,"app_hash":app_hash,"phone":phone_number
         })
+
     except Exception as e:
         print(e)
         await message.reply(f"<b>Failed to sign in: {e}</b>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Try again!!", "addUserbot")]]))
